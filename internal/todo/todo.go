@@ -48,8 +48,8 @@ type List struct {
 }
 
 // NewList creates a new empty todo list.
-func NewList() List {
-	return List{
+func NewList() *List {
+	return &List{
 		Items: []Item{},
 	}
 }

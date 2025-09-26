@@ -9,9 +9,12 @@ A command-line task management application written in Go, designed to help you o
 ## Features
 
 - ✅ Todo item creation with text and completion status
+- ✅ Todo list management (add, complete items)
+- ✅ Persistent storage (save/load to JSON files)
+- ✅ Formatted string output for display
 - ✅ Clean, testable architecture following Go best practices
+- ✅ Comprehensive test coverage
 - 🚧 Command-line interface (planned)
-- 🚧 Persistent storage (planned)
 - 🚧 Task categorization (planned)
 
 ## Architecture
@@ -28,9 +31,11 @@ The project follows Go's standard project layout:
 
 ### Core Components
 
-- **`internal/todo/todo.go`**: Defines the `Item` struct and constructor function
-- **`internal/todo/todo_test.go`**: Unit tests for todo item functionality
-- **`cmd/todo/main.go`**: Application entry point (currently minimal)
+- **`internal/todo/todo.go`**: Defines the `Item` and `List` structs with full functionality
+  - `Item`: Todo item with text and completion status
+  - `List`: Todo list with operations for adding, completing, saving, and loading
+- **`internal/todo/todo_test.go`**: Comprehensive unit tests covering all functionality
+- **`cmd/todo/main.go`**: Application entry point (currently minimal, needs package main)
 
 ## Prerequisites
 
@@ -59,21 +64,47 @@ The project follows Go's standard project layout:
 
 ## Usage
 
-*Coming soon - The CLI interface is currently under development.*
-
-For now, you can explore the todo item functionality through the Go package:
+*The CLI interface is currently under development.* However, you can use the full todo list functionality through the Go package:
 
 ```go
 package main
 
 import (
     "fmt"
+    "log"
     "github.com/kai-xlr/CLI-Task-Manager/internal/todo"
 )
 
 func main() {
-    item := todo.NewItem("Learn Go")
-    fmt.Printf("Task: %s, Done: %t\n", item.Text, item.Done)
+    // Create a new todo list
+    list := todo.NewList()
+    
+    // Add some items
+    list.Add("Learn Go")
+    list.Add("Build CLI app")
+    list.Add("Write tests")
+    
+    // Complete an item
+    if err := list.Complete(0); err != nil {
+        log.Fatal(err)
+    }
+    
+    // Display the list
+    fmt.Println(list.String())
+    
+    // Save to file
+    if err := list.Save("my-todos.json"); err != nil {
+        log.Fatal(err)
+    }
+    
+    // Load from file
+    newList := todo.NewList()
+    if err := newList.Load("my-todos.json"); err != nil {
+        log.Fatal(err)
+    }
+    
+    fmt.Println("Loaded list:")
+    fmt.Println(newList.String())
 }
 ```
 
@@ -91,8 +122,11 @@ go test -v ./...
 # Run specific package tests
 go test ./internal/todo
 
-# Run a specific test function
+# Run specific test functions
 go test -run TestNewItem ./internal/todo
+go test -run TestAddItem ./internal/todo
+go test -run TestCompleteItem ./internal/todo
+go test -run TestSaveAndLoad ./internal/todo
 ```
 
 ### Code Quality
@@ -124,13 +158,20 @@ rm -rf bin/
 
 ## Contributing
 
-This project is in early development. Key areas that need implementation:
+This project is in active development. The core functionality is implemented and well-tested. Key areas that need implementation:
 
-1. **CLI Interface**: Implement the main.go file with command-line argument parsing
-2. **Persistent Storage**: Add functionality to save and load todos from disk
-3. **Additional Operations**: Implement list, complete, delete, and update operations
-4. **Configuration**: Add configuration file support
-5. **Documentation**: Expand documentation as features are added
+1. **CLI Interface**: Implement the main.go file with command-line argument parsing (currently has wrong package declaration)
+2. **Additional Operations**: Implement delete, edit, and filter operations
+3. **Configuration**: Add configuration file support
+4. **Enhanced Features**: Priority levels, due dates, categories
+5. **Documentation**: Continue expanding documentation as features are added
+
+### Current Status
+- ✅ Core data structures (Item, List)
+- ✅ Basic operations (Add, Complete)
+- ✅ Persistence (Save/Load JSON)
+- ✅ Comprehensive test coverage
+- 🚧 CLI interface
 
 ## Project Structure
 

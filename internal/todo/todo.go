@@ -2,9 +2,31 @@
 package todo
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 )
+
+// Save writes the todo list to a file in JSON format
+func (l *List) Save(filename string) error {
+	data, err := json.Marshal(l)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(filename, data, 0644)
+}
+
+// Load reads a todo list from a file
+func (l *List) Load(filename string) error {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, l)
+}
 
 // Item represents a todo item with text and completion status.
 type Item struct {

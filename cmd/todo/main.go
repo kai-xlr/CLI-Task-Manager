@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/kai-xlr/CLI-Task-Manager/internal/todo"
@@ -34,20 +35,43 @@ func main() {
 	// Get the command
 	command := args[0]
 
-	if command == "add" {
+	switch command {
+	case "add":
 		if len(args) < 2 {
 			fmt.Println("Error: missing todo text")
 			os.Exit(1)
 		}
-
-		// Join all remaining arguments as the todo text
 		text := strings.Join(args[1:], " ")
 		todoList.Add(text)
 		saveTodos(todoList)
 		fmt.Println("Added:", text)
-	} else {
+
+	case "list":
+		fmt.Println(todoList)
+
+	case "complete":
+		if len(args) < 2 {
+			fmt.Println("Error: missing item number")
+			os.Exit(1)
+		}
+
+		num, err := strconv.Atoi(args[1])
+		if err != nil {
+			fmt.Println("Error: invalid item number:", args[1])
+			os.Exit(1)
+		}
+
+		if err := todoList.Complete(num - 1); err != nil {
+			fmt.Fprintln(os.Stderr, "Error completing todo:", err)
+			os.Exit(1)
+		}
+
+		saveTodos(todoList)
+		fmt.Println("Marked item as completed")
+
+	default:
 		fmt.Printf("Unknown command: %s\n", command)
-		fmt.Println("Available commands: add")
+		fmt.Println("Available commands: add, list")
 		os.Exit(1)
 	}
 }
